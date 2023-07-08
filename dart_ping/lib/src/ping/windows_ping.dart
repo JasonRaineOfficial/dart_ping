@@ -41,6 +41,14 @@ class PingWindows extends BasePing implements Ping {
   Map<String, String> get locale => {'LANG': 'en_US'};
 
   @override
+  Future<Process> get platformProcess async => await Process.start(
+      'chcp',
+      ['437', '&&', ipv6 ? 'ping6' : 'ping', ...params, host],
+      environment: locale,
+      runInShell: true,
+    );
+
+  @override
   List<String> get params {
     if (ipv6) throw UnimplementedError('IPv6 not implemented for windows');
     var params = ['-w', (timeout * 1000).toString(), '-i', ttl.toString()];
