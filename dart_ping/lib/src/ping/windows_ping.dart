@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:dart_ping/dart_ping.dart';
 import 'package:dart_ping/src/ping/base_ping.dart';
 
