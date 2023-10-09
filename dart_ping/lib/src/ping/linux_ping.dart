@@ -20,18 +20,24 @@ class PingLinux extends BasePing implements Ping {
           timeout,
           ttl,
           ipv6,
-          parser ?? _parser,
+          parser ?? defaultParser,
           encoding,
+          false,
         );
 
-  static PingParser get _parser => PingParser(
-        responseStr: RegExp(r'bytes from'),
-        responseRgx: RegExp(r'from (?<ip>.*): icmp_seq=(?<seq>\d+) ttl=(?<ttl>\d+) time=(?<time>(\d+).?(\d+))'),
-        sequenceRgx: RegExp(r'icmp_seq=(?<seq>\d+)'),
-        summaryStr: RegExp(r'packet loss'),
-        summaryRgx: RegExp(r'(?<tx>\d+) packets transmitted, (?<rx>\d+) received,.*time (?<time>\d+)ms'),
-        timeoutStr: RegExp(r'no answer yet'),
-        unknownHostStr: RegExp(r'unknown host|service not known|failure in name'),
+  static PingParser get defaultParser => PingParser(
+        responseRgx: RegExp(
+          r'bytes from (?:.*)(?<ip>\b(?:\d{1,3}\.){3}\d{1,3}\b)\)?: icmp_seq=(?<seq>\d+) ttl=(?<ttl>\d+) time=(?<time>(\d+).?(\d+))',
+        ),
+        summaryRgx: RegExp(
+          r'(?<tx>\d+) packets transmitted, (?<rx>\d+) received,.*time (?<time>\d+)ms',
+        ),
+        timeoutRgx: RegExp(r'no answer yet for icmp_seq=(?<seq>\d+)'),
+        timeToLiveRgx: RegExp(
+          r'From (?<ip>.*)(?:.*) icmp_seq=(?<seq>\d+) Time to live exceeded',
+        ),
+        unknownHostStr:
+            RegExp(r'unknown host|service not known|failure in name'),
       );
 
   @override
@@ -52,6 +58,8 @@ class PingLinux extends BasePing implements Ping {
 
   @override
   Exception? throwExit(int exitCode) {
-    return exitCode > 1 ? Exception('Ping process exited with code: $exitCode') : null;
+    return exitCode > 1
+        ? Exception('Ping process exited with code: $exitCode')
+        : null;
   }
 }

@@ -13,6 +13,7 @@ class PingWindows extends BasePing implements Ping {
     bool ipv6, {
     PingParser? parser,
     Encoding encoding = const Utf8Codec(),
+    bool forceCodepage = false,
   }) : super(
           host,
           count,
@@ -20,21 +21,24 @@ class PingWindows extends BasePing implements Ping {
           timeout,
           ttl,
           ipv6,
-          parser ?? _parser,
+          parser ?? defaultParser,
           encoding,
+          forceCodepage,
         );
 
-  static PingParser get _parser => PingParser(
-        responseStr: RegExp(r'Reply from'),
+  static PingParser get defaultParser => PingParser(
         responseRgx: RegExp(
-          r'from (?<ip>.*): bytes=(?:\d+) time(?:=|<)(?<time>\d+)ms TTL=(?<ttl>\d+)',
+          r'Reply from (?<ip>.*): bytes=(?:\d+) time(?:=|<)(?<time>\d+)ms TTL=(?<ttl>\d+)',
         ),
-        summaryStr: RegExp(r'Lost'),
         summaryRgx:
             RegExp(r'Sent = (?<tx>\d+), Received = (?<rx>\d+), Lost = (?:\d+)'),
-        timeoutStr: RegExp(r'host unreachable|timed out'),
+        timeoutRgx: RegExp(r'Request timed out'),
+        timeToLiveRgx: RegExp(r'Reply from (?<ip>.*): TTL expired in transit'),
         unknownHostStr: RegExp(r'could not find host'),
-        errorStr: RegExp(r'transmit failed'),
+        errorStrs: [
+          RegExp(r'General failure'),
+          RegExp(r'Destination host unreachable'),
+        ],
       );
 
   @override

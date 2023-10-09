@@ -23,7 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dart_ping: ^8.0.1
+  dart_ping: ^9.0.0
   dart_ping_ios:
     path: ../
 
@@ -32,8 +32,13 @@ dependencies:
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
+  flutter_lints: ^2.0.2
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  dart_ping:
+    path: ../../dart_ping
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
